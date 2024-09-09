@@ -93,7 +93,14 @@ app.post('/login', (req, res) => {
 
     const user = results[0];
 
-    const accessToken = jwt.sign({ id: user.id, telegram_id: user.telegram_id }, SECRET_KEY);
+    const accessToken = jwt.sign({
+      id: user.id,
+      telegram_id: user.telegram_id,
+      display_name: user.display_name,
+      ton: user.ton,
+      bnb: user.bnb,
+      plays: user.plays
+    }, SECRET_KEY);
     res.json({ accessToken });
   });
 });
