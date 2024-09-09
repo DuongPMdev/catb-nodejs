@@ -14,7 +14,7 @@ const swaggerOptions = {
       contact: {
         name: 'Developer',
       },
-      servers: ['https://catb.io:3000']
+      servers: ['https://catb.io:4000']
     }
   },
   apis: ['./routes/*.js'],
