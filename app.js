@@ -87,33 +87,30 @@ const authenticateToken = (req, res, next) => {
 app.post('/login', (req, res) => {
   const { telegram_id } = req.body;
 
-  const user = null;
-  const statistic = null;
-
   db.query('SELECT * FROM account WHERE telegram_id = ?', [telegram_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
 
-    user = results[0];
-  });
+    const user = results[0];
   
 
-  db.query('SELECT * FROM statistic WHERE account_id = ?', [user.account_id], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
+    db.query('SELECT * FROM statistic WHERE account_id = ?', [user.account_id], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
+  
+      statistic = results[0];
 
-    statistic = results[0];
+      const accessToken = jwt.sign({
+        id: user.id,
+        telegram_id: user.telegram_id,
+        display_name: user.display_name,
+        ton: statistic.ton,
+        bnb: statistic.bnb,
+        plays: statistic.plays
+      }, SECRET_KEY);
+      res.json({ accessToken });
+    });
   });
-
-  const accessToken = jwt.sign({
-    id: user.id,
-    telegram_id: user.telegram_id,
-    display_name: user.display_name,
-    ton: statistic.ton,
-    bnb: statistic.bnb,
-    plays: statistic.plays
-  }, SECRET_KEY);
-  res.json({ accessToken });
 });
 
 /**
