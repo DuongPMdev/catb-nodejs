@@ -1,5 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const db = require('./db'); // Import the database connection
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
@@ -8,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
-const SECRET_KEY = process.env.SECRET_KEY || 'your-secret-key';
+const SECRET_KEY = process.env.SECRET_KEY || 'c15afo';
 
 // Swagger setup
 const swaggerOptions = {
@@ -20,7 +22,7 @@ const swaggerOptions = {
       description: 'A simple API with JWT authentication',
     },
   },
-  apis: ['./app.js'], // Path to the API docs
+  apis: ['./app.js'],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
@@ -52,7 +54,7 @@ const authenticateToken = (req, res, next) => {
  *           schema:
  *             type: object
  *             properties:
- *               username:
+ *               telegram_id:
  *                 type: string
  *                 example: testuser
  *     responses:
@@ -66,17 +68,21 @@ const authenticateToken = (req, res, next) => {
  *                 accessToken:
  *                   type: string
  *                   description: JWT token
- *       400:
- *         description: Invalid request
+ *       401:
+ *         description: Invalid credentials
  */
 app.post('/login', (req, res) => {
-  // Example user validation
-  const username = req.body.username;
-  const user = { name: username }; // Normally, you'd fetch user data from a database
+  const { telegram_id } = req.body;
 
-  // Generate JWT
-  const accessToken = jwt.sign(user, SECRET_KEY);
-  res.json({ accessToken });
+  db.query('SELECT * FROM account WHERE telegram_id = ?', [telegram_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const user = results[0];
+
+    const accessToken = jwt.sign({ id: user.id, telegram_id: user.telegram_id }, SECRET_KEY);
+    res.json({ accessToken });
+  });
 });
 
 /**
@@ -101,7 +107,7 @@ app.post('/login', (req, res) => {
  *                 user:
  *                   type: object
  *                   properties:
- *                     name:
+ *                     username:
  *                       type: string
  *                       example: testuser
  *       401:
@@ -114,5 +120,5 @@ app.get('/protected', authenticateToken, (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://catb.io:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
