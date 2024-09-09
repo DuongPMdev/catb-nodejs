@@ -20,6 +20,20 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'A simple API with JWT authentication',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: ['./app.js'],
 };
