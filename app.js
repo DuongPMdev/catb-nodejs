@@ -165,13 +165,6 @@ app.get('/protected', authenticateToken, (req, res) => {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: This is a protected route
- *                 user:
- *                   type: object
- *                   properties:
- *                     username:
- *                       type: string
- *                       example: testuser
  *       401:
  *         description: Unauthorized
  *       403:
@@ -190,13 +183,13 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  * @swagger
  * /cat_lucky/play_stage:
  *   get:
- *     summary: Play stage of current user
- *     description: Returns a protected message if a valid JWT token is provided.
+ *     summary:
+ *     description:
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Returns a protected message
+ *         description:
  *         content:
  *           application/json:
  *             schema:
@@ -204,13 +197,6 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *               properties:
  *                 stage:
  *                   type: int
- *                   example: 0
- *                 user:
- *                   type: object
- *                   properties:
- *                     username:
- *                       type: string
- *                       example: testuser
  *       401:
  *         description: Unauthorized
  *       403:
@@ -221,7 +207,8 @@ app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   res.json({
     stage: 0,
     lock_until: now.toLocaleString(),
-    message: "Locked until " + now.toLocaleString()
+    message: "Locked until " + now.toLocaleString(),
+    user: req.user.account_id
   });
 });
 
