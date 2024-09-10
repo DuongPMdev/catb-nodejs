@@ -100,7 +100,7 @@ app.post('/login', (req, res) => {
   
       statistic = results[0];
 
-      const accessToken = jwt.sign({
+      jwt.sign({
         id: user.id,
         telegram_id: user.telegram_id,
         display_name: user.display_name,
@@ -149,11 +149,6 @@ app.get('/protected', authenticateToken, (req, res) => {
  *     responses:
  *       200:
  *         description: Returns a protected message
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
  *       401:
  *         description: Unauthorized
  *       403:
