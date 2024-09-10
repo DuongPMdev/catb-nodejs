@@ -132,11 +132,11 @@ app.post('/login', (req, res) => {
  */
 app.get('/protected', authenticateToken, (req, res) => {
   var responsesData = {
-    telegram_id: user.telegram_id,
-    display_name: user.display_name,
-    ton: statistic.ton,
-    bnb: statistic.bnb,
-    plays: statistic.plays
+    telegram_id: req.user.telegram_id,
+    display_name: req.user.display_name,
+    ton: req.user.ton,
+    bnb: req.user.bnb,
+    plays: req.user.plays
   };
   res.json({ message: 'This is a protected route', user: responsesData });
 });
