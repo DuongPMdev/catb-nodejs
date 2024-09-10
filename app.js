@@ -163,8 +163,6 @@ app.get('/protected', authenticateToken, (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
  *       401:
  *         description: Unauthorized
  *       403:
@@ -197,6 +195,7 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *               properties:
  *                 stage:
  *                   type: int
+ *                   example: 0
  *       401:
  *         description: Unauthorized
  *       403:
