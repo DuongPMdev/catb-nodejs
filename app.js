@@ -163,7 +163,7 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
   db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
 
-    var result = {
+    var responsesData = {
       stage: 0,
       current_stage_result: "",
       collected_coin: 0,
@@ -175,21 +175,25 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
       lock_until: now.toLocaleString()
     };
 
+    console.log(responsesData);
+
     if (results.length === 1) {
       var cat_lucky = results[0];
-      result.stage = cat_lucky.stage;
-      result.current_stage_result = cat_lucky.current_stage_result;
-      result.collected_coin = cat_lucky.collected_coin;
-      result.collected_gem = cat_lucky.collected_gem;
-      result.collected_shard = cat_lucky.collected_shard;
-      result.collected_ton = cat_lucky.collected_ton;
-      result.collected_bnb = cat_lucky.collected_bnb;
-      result.collected_plays = cat_lucky.collected_plays;
-      result.lock_until = cat_lucky.lock_until;
+      responsesData.stage = cat_lucky.stage;
+      responsesData.current_stage_result = cat_lucky.current_stage_result;
+      responsesData.collected_coin = cat_lucky.collected_coin;
+      responsesData.collected_gem = cat_lucky.collected_gem;
+      responsesData.collected_shard = cat_lucky.collected_shard;
+      responsesData.collected_ton = cat_lucky.collected_ton;
+      responsesData.collected_bnb = cat_lucky.collected_bnb;
+      responsesData.collected_plays = cat_lucky.collected_plays;
+      responsesData.lock_until = cat_lucky.lock_until;
     }
+    
+    console.log(responsesData);
 
     res.json({
-      results: results
+      result: responsesData
     });
   });
 });
