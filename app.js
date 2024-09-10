@@ -196,12 +196,6 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *                 stage:
  *                   type: int
  *                   example: 0
- *                 user:
- *                   type: object
- *                   properties:
- *                     username:
- *                       type: string
- *                       example: testuser
  *       401:
  *         description: Unauthorized
  *       403:
@@ -209,11 +203,12 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  */
 app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   const now = new Date();
+  console.log('req.user : ', req.user);
+  console.log('req.user.account_id : ', req.user.account_id);
   res.json({
     stage: 0,
     lock_until: now.toLocaleString(),
-    message: "Locked until " + now.toLocaleString(),
-    user: req.user.account_id
+    message: "Locked until " + now.toLocaleString()
   });
 });
 
