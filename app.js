@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const db = require('./db'); // Import the database connection
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const e = require('express');
 require('dotenv').config();
 
 const app = express();
@@ -159,10 +160,37 @@ app.get('/protected', authenticateToken, (req, res) => {
  */
 app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
   const now = new Date();
-  res.json({
-    stage: 0,
-    lock_until: now.toLocaleString(),
-    message: "Locked until " + now.toLocaleString()
+  db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    var result = {
+      stage: 0,
+      current_stage_result: "",
+      collected_coin: 0,
+      collected_gem: 0,
+      collected_shard: 0,
+      collected_ton: 0,
+      collected_bnb: 0,
+      collected_plays: 0,
+      lock_until: now.toLocaleString()
+    };
+
+    if (results.length === 1) {
+      var cat_lucky = results[0];
+      result.stage = cat_lucky.stage;
+      result.current_stage_result = cat_lucky.current_stage_result;
+      result.collected_coin = cat_lucky.collected_coin;
+      result.collected_gem = cat_lucky.collected_gem;
+      result.collected_shard = cat_lucky.collected_shard;
+      result.collected_ton = cat_lucky.collected_ton;
+      result.collected_bnb = cat_lucky.collected_bnb;
+      result.collected_plays = cat_lucky.collected_plays;
+      result.lock_until = cat_lucky.lock_until;
+    }
+
+    res.json({
+      results: results
+    });
   });
 });
 
