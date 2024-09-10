@@ -187,7 +187,7 @@ app.get('/protected', authenticateToken, (req, res) => {
  */
 app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
   res.json({
-    result: req.user.catLuckyData
+    result: req.user.cat_lucky
   });
 });
 
@@ -218,7 +218,7 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
 app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   var playStage = req.body.stage;
   console.log(playStage);
-  var currentStage = res.user.catLuckyData.stage;
+  var currentStage = res.user.cat_lucky.stage;
   console.log(currentStage);
 });
 
