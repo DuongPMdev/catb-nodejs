@@ -199,10 +199,9 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *     description:
  *     security:
  *       - bearerAuth: []
- *     responses:
- *       200:
- *         description:
- *         content:
+ *     requestBody:
+ *       required: true
+ *       content:
  *           application/json:
  *             schema:
  *               type: object
@@ -210,6 +209,9 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *                 stage:
  *                   type: int
  *                   example: 0
+ *     responses:
+ *       200:
+ *         description:
  *       401:
  *         description: Unauthorized
  *       403:
@@ -220,6 +222,7 @@ app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   console.log("playStage : " + playStage);
   var currentStage = req.user.cat_lucky.stage;
   console.log("currentStage : " + currentStage);
+  res.json({});
 });
 
 app.listen(PORT, () => {
