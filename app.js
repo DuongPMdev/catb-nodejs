@@ -219,10 +219,33 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  */
 app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   var playStage = req.body.stage;
-  console.log("playStage : " + playStage);
   var currentStage = req.user.cat_lucky.stage;
-  console.log("currentStage : " + currentStage);
-  res.json({});
+  if (playStage > currentStage) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+  else if (playStage < currentStage) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+  else if (playStage === currentStage) {
+    req.user.cat_lucky.stage++;
+
+    if (req.user.cat_lucky.current_stage_result !== "") {
+      var currentStageResultArray = str.split(",")
+      if (currentStageResultArray.length > 0) {
+        var item = currentStageResultArray[0].split(":")
+        if (item.length == 2) {
+          if (item[0] === "COIN") {
+            req.user.cat_lucky.collected_coin += item[1];
+          }
+        }
+      }
+    }
+
+    
+  }
+  res.json({
+    result: req.user.cat_lucky
+  });
 });
 
 app.listen(PORT, () => {
