@@ -186,6 +186,45 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /cat_lucky/play_stage:
+ *   get:
+ *     summary: Play stage of current user
+ *     description: Returns a protected message if a valid JWT token is provided.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns a protected message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 stage:
+ *                   type: int
+ *                   example: 0
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                       example: testuser
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
+app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
+  const now = new Date();
+  res.json({
+    stage: 0,
+    lock_until: now.toLocaleString(),
+    message: "Locked until " + now.toLocaleString()
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
