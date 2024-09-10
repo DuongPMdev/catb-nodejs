@@ -85,7 +85,7 @@ const authenticateToken = (req, res, next) => {
  *       401:
  *         description: Invalid credentials
  */
-app.post('/login', (req, res) => 
+app.post('/login', (req, res) => {
   db.query('SELECT * FROM account WHERE telegram_id = ?', [req.body.telegram_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
