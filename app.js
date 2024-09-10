@@ -196,6 +196,12 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *                 stage:
  *                   type: int
  *                   example: 0
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                       example: testuser
  *       401:
  *         description: Unauthorized
  *       403:
