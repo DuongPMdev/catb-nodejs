@@ -269,7 +269,7 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
       });
     }
     else {
-      db.query('INSERT INTO cat_lucky(account_id, stage, current_stage_result) VALUE (?, ?, ?)', [req.user.account_id, stage, ""], (err, results) => {
+      db.query('INSERT INTO cat_lucky(account_id, stage, current_stage_result) VALUE (?, ?, ?)', [req.user.account_id, currentStage, ""], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({
           result: catLuckyData
