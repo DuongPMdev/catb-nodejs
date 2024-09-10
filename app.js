@@ -217,7 +217,7 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *       403:
  *         description: Forbidden
  */
-app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
+app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   var playStage = req.body.stage;
   console.log("playStage : " + playStage);
   var currentStage = req.user.cat_lucky.stage;
