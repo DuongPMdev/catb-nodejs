@@ -147,6 +147,40 @@ app.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
 
+/**
+ * @swagger
+ * /cat_lucky/get_status:
+ *   get:
+ *     summary: Get account cat lucky game status
+ *     description: Returns a protected message if a valid JWT token is provided.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns a protected message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: This is a protected route
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                       example: testuser
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
+app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
+  res.json({ message: 'This is a protected route', user: req.user });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
