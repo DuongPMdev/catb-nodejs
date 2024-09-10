@@ -104,12 +104,20 @@ app.post('/login', (req, res) => {
         id: user.id,
         telegram_id: user.telegram_id,
         display_name: user.display_name,
+        account_id: user.account_id,
         ton: statistic.ton,
         bnb: statistic.bnb,
         plays: statistic.plays
       }, SECRET_KEY);
-      accessToken.account_id = user.account_id;
-      res.json({ accessToken });
+      var responsesData = {
+        telegram_id: user.telegram_id,
+        display_name: user.display_name,
+        account_id: user.account_id,
+        ton: statistic.ton,
+        bnb: statistic.bnb,
+        plays: statistic.plays
+      };
+      res.json({ responsesData });
     });
   });
 });
