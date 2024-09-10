@@ -105,15 +105,11 @@ app.post('/login', (req, res) => {
         telegram_id: user.telegram_id,
         display_name: user.display_name,
         account_id: user.account_id,
-      }, SECRET_KEY);
-      var responsesData = {
-        telegram_id: user.telegram_id,
-        display_name: user.display_name,
         ton: statistic.ton,
         bnb: statistic.bnb,
         plays: statistic.plays
-      };
-      res.json({ responsesData });
+      }, SECRET_KEY);
+      res.json({ accessToken });
     });
   });
 });
@@ -129,11 +125,6 @@ app.post('/login', (req, res) => {
  *     responses:
  *       200:
  *         description: Returns a protected message
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
  *       401:
  *         description: Unauthorized
  *       403:
