@@ -96,7 +96,7 @@ app.post('/login', (req, res) => {
       if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
       statistic = results[0];
 
-      db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
+      db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [user.account_id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
     
         var catLuckyData = {
