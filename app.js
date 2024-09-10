@@ -218,6 +218,7 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *         description: Forbidden
  */
 app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
+  const now = new Date();
   db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
 
