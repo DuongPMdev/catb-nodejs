@@ -100,20 +100,16 @@ app.post('/login', (req, res) => {
   
       statistic = results[0];
 
-      jwt.sign({
+      const accessToken = jwt.sign({
         id: user.id,
         telegram_id: user.telegram_id,
-        display_name: user.display_name,
-        account_id: user.account_id
-      }, SECRET_KEY);
-      var responsesData = {
-        telegram_id: user.telegram_id,
+        account_id: user.account_id,
         display_name: user.display_name,
         ton: statistic.ton,
         bnb: statistic.bnb,
         plays: statistic.plays
-      };
-      res.json({ responsesData });
+      }, SECRET_KEY);
+      res.json({ accessToken });
     });
   });
 });
@@ -135,7 +131,14 @@ app.post('/login', (req, res) => {
  *         description: Forbidden
  */
 app.get('/protected', authenticateToken, (req, res) => {
-  res.json({ message: 'This is a protected route', user: req.user });
+  var responsesData = {
+    telegram_id: user.telegram_id,
+    display_name: user.display_name,
+    ton: statistic.ton,
+    bnb: statistic.bnb,
+    plays: statistic.plays
+  };
+  res.json({ message: 'This is a protected route', user: responsesData });
 });
 
 /**
