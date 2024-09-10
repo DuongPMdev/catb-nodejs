@@ -108,6 +108,7 @@ app.post('/login', (req, res) => {
         bnb: statistic.bnb,
         plays: statistic.plays
       }, SECRET_KEY);
+      accessToken.account_id = user.account_id;
       res.json({ accessToken });
     });
   });
