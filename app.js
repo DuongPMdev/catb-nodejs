@@ -113,7 +113,7 @@ app.post('/login', (req, res) => {
         bnb: statistic.bnb,
         plays: statistic.plays
       };
-      res.json({ accessToken });
+      res.json({ responsesData });
     });
   });
 });
