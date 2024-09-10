@@ -217,9 +217,9 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  */
 app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   var playStage = req.body.stage;
-  console.log(playStage);
-  var currentStage = res.user.cat_lucky.stage;
-  console.log(currentStage);
+  console.log("playStage : " + playStage);
+  var currentStage = req.user.cat_lucky.stage;
+  console.log("currentStage : " + currentStage);
 });
 
 app.listen(PORT, () => {
