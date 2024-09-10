@@ -181,8 +181,8 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
   const now = new Date();
   res.json({
     stage: 0,
-    lock_until: now.toLocaleDateString(),
-    message: "Locked until " + now.toLocaleDateString()
+    lock_until: now.toLocaleString(),
+    message: "Locked until " + now.toLocaleString()
   });
 });
 
