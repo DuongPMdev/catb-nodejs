@@ -96,48 +96,18 @@ app.post('/login', (req, res) => {
       if (err) return res.status(500).json({ error: err.message });
       if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
       statistic = results[0];
-
-      db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [user.account_id], (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-    
-        var catLuckyData = {
-          stage: 0,
-          current_stage_result: "",
-          collected_coin: 0,
-          collected_gem: 0,
-          collected_shard: 0,
-          collected_ton: 0,
-          collected_bnb: 0,
-          collected_plays: 0,
-          lock_until: now.toLocaleString()
-        };
-    
-        if (results.length === 1) {
-          var cat_lucky = results[0];
-          catLuckyData.stage = cat_lucky.stage;
-          catLuckyData.current_stage_result = cat_lucky.current_stage_result;
-          catLuckyData.collected_coin = cat_lucky.collected_coin;
-          catLuckyData.collected_gem = cat_lucky.collected_gem;
-          catLuckyData.collected_shard = cat_lucky.collected_shard;
-          catLuckyData.collected_ton = cat_lucky.collected_ton;
-          catLuckyData.collected_bnb = cat_lucky.collected_bnb;
-          catLuckyData.collected_plays = cat_lucky.collected_plays;
-          catLuckyData.lock_until = cat_lucky.lock_until;
-        }
         
-        const accessToken = jwt.sign({
-          id: user.id,
-          telegram_id: user.telegram_id,
-          account_id: user.account_id,
-          display_name: user.display_name,
-          ton: statistic.ton,
-          bnb: statistic.bnb,
-          plays: statistic.plays,
-          cat_lucky: catLuckyData
-        }, SECRET_KEY);
-        res.json({ accessToken });
+      const accessToken = jwt.sign({
+        id: user.id,
+        telegram_id: user.telegram_id,
+        account_id: user.account_id,
+        display_name: user.display_name,
+        ton: statistic.ton,
+        bnb: statistic.bnb,
+        plays: statistic.plays,
+      }, SECRET_KEY);
+      res.json({ accessToken });
 
-      });
     });
   });
 });
@@ -186,8 +156,38 @@ app.get('/protected', authenticateToken, (req, res) => {
  *         description: Forbidden
  */
 app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
-  res.json({
-    result: req.user.cat_lucky
+  db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    var catLuckyData = {
+      stage: 0,
+      current_stage_result: "",
+      collected_coin: 0,
+      collected_gem: 0,
+      collected_shard: 0,
+      collected_ton: 0,
+      collected_bnb: 0,
+      collected_plays: 0,
+      lock_until: now.toLocaleString()
+    };
+
+    if (results.length === 1) {
+      var cat_lucky = results[0];
+      catLuckyData.stage = cat_lucky.stage;
+      catLuckyData.current_stage_result = cat_lucky.current_stage_result;
+      catLuckyData.collected_coin = cat_lucky.collected_coin;
+      catLuckyData.collected_gem = cat_lucky.collected_gem;
+      catLuckyData.collected_shard = cat_lucky.collected_shard;
+      catLuckyData.collected_ton = cat_lucky.collected_ton;
+      catLuckyData.collected_bnb = cat_lucky.collected_bnb;
+      catLuckyData.collected_plays = cat_lucky.collected_plays;
+      catLuckyData.lock_until = cat_lucky.lock_until;
+    }
+
+    res.json({
+      result: catLuckyData
+    });
+
   });
 });
 
@@ -218,33 +218,64 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *         description: Forbidden
  */
 app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
-  var playStage = req.body.stage;
-  var currentStage = req.user.cat_lucky.stage;
-  if (playStage > currentStage) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-  else if (playStage < currentStage) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-  else if (playStage === currentStage) {
-    req.user.cat_lucky.stage++;
+  db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
 
-    if (req.user.cat_lucky.current_stage_result !== "") {
-      var currentStageResultArray = str.split(",")
-      if (currentStageResultArray.length > 0) {
-        var item = currentStageResultArray[0].split(":")
-        if (item.length == 2) {
-          if (item[0] === "COIN") {
-            req.user.cat_lucky.collected_coin += item[1];
-          }
-        }
-      }
+    var catLuckyData = {
+      stage: 0,
+      current_stage_result: "",
+      collected_coin: 0,
+      collected_gem: 0,
+      collected_shard: 0,
+      collected_ton: 0,
+      collected_bnb: 0,
+      collected_plays: 0,
+      lock_until: now.toLocaleString()
+    };
+
+    if (results.length === 1) {
+      var cat_lucky = results[0];
+      catLuckyData.stage = cat_lucky.stage;
+      catLuckyData.current_stage_result = cat_lucky.current_stage_result;
+      catLuckyData.collected_coin = cat_lucky.collected_coin;
+      catLuckyData.collected_gem = cat_lucky.collected_gem;
+      catLuckyData.collected_shard = cat_lucky.collected_shard;
+      catLuckyData.collected_ton = cat_lucky.collected_ton;
+      catLuckyData.collected_bnb = cat_lucky.collected_bnb;
+      catLuckyData.collected_plays = cat_lucky.collected_plays;
+      catLuckyData.lock_until = cat_lucky.lock_until;
     }
 
-    
-  }
-  res.json({
-    result: req.user.cat_lucky
+    var playStage = req.body.stage;
+    var currentStage = catLuckyData.stage;
+    if (playStage > currentStage) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    else if (playStage < currentStage) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    else if (playStage === currentStage) {
+      currentStage++;
+      catLuckyData.stage++;
+    }
+
+    if (results.length === 1) {
+      db.query('UPDATE cat_lucky SET stage = ? WHERE account_id = ?', [currentStage, req.user.account_id], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({
+          result: catLuckyData
+        });
+      });
+    }
+    else {
+      db.query('INSERT INTO cat_lucky(account_id, stage, current_stage_result) VALUE (?, ?, ?)', [req.user.account_id, stage, ""], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({
+          result: catLuckyData
+        });
+      });
+    }
+
   });
 });
 
