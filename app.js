@@ -194,7 +194,7 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
 /**
  * @swagger
  * /cat_lucky/play_stage:
- *   get:
+ *   post:
  *     summary:
  *     description:
  *     security:
