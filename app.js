@@ -85,32 +85,58 @@ const authenticateToken = (req, res, next) => {
  *       401:
  *         description: Invalid credentials
  */
-app.post('/login', (req, res) => {
-  const { telegram_id } = req.body;
-
-  db.query('SELECT * FROM account WHERE telegram_id = ?', [telegram_id], (err, results) => {
+app.post('/login', (req, res) => 
+  db.query('SELECT * FROM account WHERE telegram_id = ?', [req.body.telegram_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
-
     const user = results[0];
   
-
     db.query('SELECT * FROM statistic WHERE account_id = ?', [user.account_id], (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
       if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
-  
       statistic = results[0];
 
-      const accessToken = jwt.sign({
-        id: user.id,
-        telegram_id: user.telegram_id,
-        account_id: user.account_id,
-        display_name: user.display_name,
-        ton: statistic.ton,
-        bnb: statistic.bnb,
-        plays: statistic.plays
-      }, SECRET_KEY);
-      res.json({ accessToken });
+      db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+    
+        var catLuckyData = {
+          stage: 0,
+          current_stage_result: "",
+          collected_coin: 0,
+          collected_gem: 0,
+          collected_shard: 0,
+          collected_ton: 0,
+          collected_bnb: 0,
+          collected_plays: 0,
+          lock_until: now.toLocaleString()
+        };
+    
+        if (results.length === 1) {
+          var cat_lucky = results[0];
+          catLuckyData.stage = cat_lucky.stage;
+          catLuckyData.current_stage_result = cat_lucky.current_stage_result;
+          catLuckyData.collected_coin = cat_lucky.collected_coin;
+          catLuckyData.collected_gem = cat_lucky.collected_gem;
+          catLuckyData.collected_shard = cat_lucky.collected_shard;
+          catLuckyData.collected_ton = cat_lucky.collected_ton;
+          catLuckyData.collected_bnb = cat_lucky.collected_bnb;
+          catLuckyData.collected_plays = cat_lucky.collected_plays;
+          catLuckyData.lock_until = cat_lucky.lock_until;
+        }
+        
+        const accessToken = jwt.sign({
+          id: user.id,
+          telegram_id: user.telegram_id,
+          account_id: user.account_id,
+          display_name: user.display_name,
+          ton: statistic.ton,
+          bnb: statistic.bnb,
+          plays: statistic.plays,
+          cat_lucky: catLuckyData
+        }, SECRET_KEY);
+        res.json({ accessToken });
+
+      });
     });
   });
 });
@@ -159,42 +185,8 @@ app.get('/protected', authenticateToken, (req, res) => {
  *         description: Forbidden
  */
 app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
-  const now = new Date();
-  db.query('SELECT * FROM cat_lucky WHERE account_id = ?', [req.user.account_id], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-
-    var responsesData = {
-      stage: 0,
-      current_stage_result: "",
-      collected_coin: 0,
-      collected_gem: 0,
-      collected_shard: 0,
-      collected_ton: 0,
-      collected_bnb: 0,
-      collected_plays: 0,
-      lock_until: now.toLocaleString()
-    };
-
-    console.log(responsesData);
-
-    if (results.length === 1) {
-      var cat_lucky = results[0];
-      responsesData.stage = cat_lucky.stage;
-      responsesData.current_stage_result = cat_lucky.current_stage_result;
-      responsesData.collected_coin = cat_lucky.collected_coin;
-      responsesData.collected_gem = cat_lucky.collected_gem;
-      responsesData.collected_shard = cat_lucky.collected_shard;
-      responsesData.collected_ton = cat_lucky.collected_ton;
-      responsesData.collected_bnb = cat_lucky.collected_bnb;
-      responsesData.collected_plays = cat_lucky.collected_plays;
-      responsesData.lock_until = cat_lucky.lock_until;
-    }
-    
-    console.log(responsesData);
-
-    res.json({
-      result: responsesData
-    });
+  res.json({
+    result: req.user.catLuckyData
   });
 });
 
@@ -223,17 +215,10 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *         description: Forbidden
  */
 app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
-  const now = new Date();
-  console.log('req.user : ', req.user);
-  console.log('req.user.account_id : ', req.user.account_id);
-  console.log('req.user.ton : ', req.user.ton);
-  console.log('req.user.bnb : ', req.user.bnb);
-  console.log('req.user.plays : ', req.user.plays);
-  res.json({
-    stage: 0,
-    lock_until: now.toLocaleString(),
-    message: "Locked until " + now.toLocaleString()
-  });
+  var playStage = req.body.stage;
+  console.log(playStage);
+  var currentStage = res.user.catLuckyData.stage;
+  console.log(currentStage);
 });
 
 app.listen(PORT, () => {
