@@ -105,14 +105,10 @@ app.post('/login', (req, res) => {
         telegram_id: user.telegram_id,
         display_name: user.display_name,
         account_id: user.account_id,
-        ton: statistic.ton,
-        bnb: statistic.bnb,
-        plays: statistic.plays
       }, SECRET_KEY);
       var responsesData = {
         telegram_id: user.telegram_id,
         display_name: user.display_name,
-        account_id: user.account_id,
         ton: statistic.ton,
         bnb: statistic.bnb,
         plays: statistic.plays
@@ -138,15 +134,6 @@ app.post('/login', (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
- *                   example: This is a protected route
- *                 user:
- *                   type: object
- *                   properties:
- *                     username:
- *                       type: string
- *                       example: testuser
  *       401:
  *         description: Unauthorized
  *       403:
