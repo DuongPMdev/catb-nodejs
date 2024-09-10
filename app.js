@@ -194,6 +194,9 @@ app.get('/cat_lucky/play_stage', authenticateToken, (req, res) => {
   const now = new Date();
   console.log('req.user : ', req.user);
   console.log('req.user.account_id : ', req.user.account_id);
+  console.log('req.user.ton : ', req.user.ton);
+  console.log('req.user.bnb : ', req.user.bnb);
+  console.log('req.user.plays : ', req.user.plays);
   res.json({
     stage: 0,
     lock_until: now.toLocaleString(),
