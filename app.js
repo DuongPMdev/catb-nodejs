@@ -178,7 +178,12 @@ app.get('/protected', authenticateToken, (req, res) => {
  *         description: Forbidden
  */
 app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
-  res.json({ message: 'This is a protected route', user: req.user });
+  const now = new Date();
+  res.json({
+    stage: 0,
+    lock_until: now.toLocaleDateString(),
+    message: "Locked until " + now.toLocaleDateString()
+  });
 });
 
 app.listen(PORT, () => {
