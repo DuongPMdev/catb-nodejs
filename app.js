@@ -274,7 +274,7 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
             catLuckyData.stage++;
             catLuckyData.current_stage_result = getStageResult();
             if (type === "COIN") {
-              catLuckyData.collected_coin += value;
+              catLuckyData.collected_coin += parseInt(value);
             }
           }
         }
