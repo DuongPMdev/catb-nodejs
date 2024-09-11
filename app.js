@@ -209,6 +209,9 @@ app.get('/cat_lucky/get_status', authenticateToken, (req, res) => {
  *                 stage:
  *                   type: int
  *                   example: 0
+ *                 end_game:
+ *                   type: boolean
+ *                   example: false
  *     responses:
  *       200:
  *         description:
@@ -248,20 +251,38 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
     }
 
     var playStage = req.body.stage;
-    var currentStage = catLuckyData.stage;
+    var isEndGame = req.body.end_game;
     if (playStage !== currentStage) {
-      res.json({
+      return res.json({
         result: catLuckyData
       });
     }
     else if (playStage === currentStage) {
-      currentStage++;
-      catLuckyData.stage++;
+      if (isEndGame == false) {
+        var currentStageResult = catLuckyData.current_stage_result;
+        if (currentStageResult !== "") {
+          var currentStageResultArray = currentStageResult.split(",");
+          var firstCurrentStageResult = currentStageResultArray[0];
+          var firstCurrentStageResultArray = firstCurrentStageResult.split(":");
+          var type = firstCurrentStageResultArray[0];
+          var value = firstCurrentStageResultArray[1];
+          if (type === "GAMEOVER") {
+            catLuckyData.stage = 0;
+            catLuckyData.current_stage_result = "";
+          }
+          else{
+            catLuckyData.stage++;
+            catLuckyData.current_stage_result = getStageResult();
+            if (type === "COIN") {
+              catLuckyData.collected_coin += value;
+            }
+          }
+        }
+      }
     }
-    var nextStageResult = getStageResult();
 
     if (results.length === 1) {
-      db.query('UPDATE cat_lucky SET stage = ?, current_stage_result = ? WHERE account_id = ?', [currentStage, nextStageResult, req.user.account_id], (err, results) => {
+      db.query('UPDATE cat_lucky SET stage = ?, current_stage_result = ?, collected_coin = ? WHERE account_id = ?', [catLuckyData.stage, catLuckyData.current_stage_result, catLuckyData.collected_coin, req.user.account_id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({
           result: catLuckyData
@@ -269,7 +290,7 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
       });
     }
     else {
-      db.query('INSERT INTO cat_lucky(account_id, stage, current_stage_result) VALUE (?, ?, ?)', [req.user.account_id, currentStage, nextStageResult], (err, results) => {
+      db.query('INSERT INTO cat_lucky(account_id, stage, current_stage_result, collected_coin) VALUE (?, ?, ?)', [req.user.account_id, catLuckyData.stage, catLuckyData.current_stage_result, catLuckyData.collected_coin], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({
           result: catLuckyData
