@@ -252,12 +252,12 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
 
     var playStage = req.body.stage;
     var isEndGame = req.body.end_game;
-    if (playStage !== currentStage) {
+    if (playStage !== catLuckyData.stage) {
       return res.json({
         result: catLuckyData
       });
     }
-    else if (playStage === currentStage) {
+    else {
       if (isEndGame == false) {
         var currentStageResult = catLuckyData.current_stage_result;
         if (currentStageResult !== "") {
