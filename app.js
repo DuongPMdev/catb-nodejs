@@ -249,19 +249,19 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
 
     var playStage = req.body.stage;
     var currentStage = catLuckyData.stage;
-    if (playStage > currentStage) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    else if (playStage < currentStage) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    if (playStage !== currentStage) {
+      res.json({
+        result: catLuckyData
+      });
     }
     else if (playStage === currentStage) {
       currentStage++;
       catLuckyData.stage++;
     }
+    var nextStageResult = getStageResult();
 
     if (results.length === 1) {
-      db.query('UPDATE cat_lucky SET stage = ? WHERE account_id = ?', [currentStage, req.user.account_id], (err, results) => {
+      db.query('UPDATE cat_lucky SET stage = ?, current_stage_result = ? WHERE account_id = ?', [currentStage, nextStageResult, req.user.account_id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({
           result: catLuckyData
@@ -269,7 +269,7 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
       });
     }
     else {
-      db.query('INSERT INTO cat_lucky(account_id, stage, current_stage_result) VALUE (?, ?, ?)', [req.user.account_id, currentStage, ""], (err, results) => {
+      db.query('INSERT INTO cat_lucky(account_id, stage, current_stage_result) VALUE (?, ?, ?)', [req.user.account_id, currentStage, nextStageResult], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({
           result: catLuckyData
@@ -279,6 +279,23 @@ app.post('/cat_lucky/play_stage', authenticateToken, (req, res) => {
 
   });
 });
+
+function getStageResult(stage) {
+  var result = "";
+  var gameOverPosition = Math.floor(Math.random() * 4);
+  for (var i = 0; i < 4; i++) {
+    if (i === gameOverPosition) {
+      result += "GAMEOVER:1";
+    }
+    else {
+      result += "COIN:100";
+    }
+    if (i < 3) {
+      result += ",";
+    }
+  }
+  return result;
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
